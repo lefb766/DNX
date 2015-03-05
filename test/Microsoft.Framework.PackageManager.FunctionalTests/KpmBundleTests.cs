@@ -59,6 +59,18 @@ exec ""{2}{3}"" --appbase ""${0}"" Microsoft.Framework.ApplicationHost {4} ""$@"
   'Build': ['build_config3.bconfig'],
   'packages': {}
 }";
+            var projectStructure = DirTree.CreateFromList(
+                "project.json",
+                "Config.json",
+                "Program.cs",
+                "build_config1.bconfig",
+                "Views/Home/index.cshtml",
+                "Views\Shared\_Layout.cshtml",
+                "Controllers\HomeController.cs",
+                "Models\User.cs",
+                "Models\build_config2.bconfig",
+                "Build\build_config3.bconfig",
+                "packages\");
             var expectedOutputStructure = @"{
   'wwwroot': {
     '.': ['project.json', 'Config.json', 'Program.cs', 'build_config1.bconfig', 'web.config'],

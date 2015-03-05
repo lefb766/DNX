@@ -102,15 +102,13 @@ namespace Microsoft.Framework.ApplicationHost
         [MemberData("RuntimeHomeDirs")]
         public void KCommandShowsErrorWhenGivenSubcommandWasNotFoundInProjectJson(DisposableDir runtimeHomeDir)
         {
-            var projectStructure = @"{
-  'project.json': '{ }'
-}";
-
             using (runtimeHomeDir)
             using (var projectPath = TestUtils.CreateTempDir())
             {
 
-                DirTree.CreateFromJson(projectStructure).WriteTo(projectPath);
+                DirTree.CreateFromList("project.json")
+                    .WithFileContents("project.json", "{}")
+                    .WriteTo(projectPath);
 
                 string stdOut, stdErr;
                 var exitCode = KCommandTestUtils.ExecKCommand(
