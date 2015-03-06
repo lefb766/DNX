@@ -1032,12 +1032,12 @@ exec ""{2}{3}"" --appbase ""${0}"" Microsoft.Framework.ApplicationHost {4} ""$@"
         ""HelloWorld.1.0.0.nupkg"": {},
         ""HelloWorld.1.0.0.nupkg.sha512"": {},
         ""HelloWorld.nuspec"": {},
-        ""app\\hello.cmd"": {},
-        ""app\\hello.sh"": {},
-        ""app\\project.json"": {},
-        ""lib\\aspnet50\\HelloWorld.dll"": {},
-        ""lib\\aspnet50\\HelloWorld.xml"": {},
-        ""root\\project.json"": {}
+        ""app/hello.cmd"": {},
+        ""app/hello.sh"": {},
+        ""app/project.json"": {},
+        ""lib/aspnet50/HelloWorld.dll"": {},
+        ""lib/aspnet50/HelloWorld.xml"": {},
+        ""root/project.json"": {}
       }
     }
   }
@@ -1118,13 +1118,13 @@ exec ""{2}{3}"" --appbase ""${0}"" Microsoft.Framework.ApplicationHost {4} ""$@"
         ""HelloWorld.1.0.0.nupkg"": {},
         ""HelloWorld.1.0.0.nupkg.sha512"": {},
         ""HelloWorld.nuspec"": {},
-        ""app\\hello.cmd"": {},
-        ""app\\hello.sh"": {},
-        ""app\\project.json"": {},
-        ""lib\\aspnet50\\HelloWorld.dll"": {},
-        ""lib\\aspnet50\\HelloWorld.xml"": {},
-        ""root\\project.json"": {},
-        ""root\\project.lock.json"": {}
+        ""app/hello.cmd"": {},
+        ""app/hello.sh"": {},
+        ""app/project.json"": {},
+        ""lib/aspnet50/HelloWorld.dll"": {},
+        ""lib/aspnet50/HelloWorld.xml"": {},
+        ""root/project.json"": {},
+        ""root/project.lock.json"": {}
       }
     }
   }
