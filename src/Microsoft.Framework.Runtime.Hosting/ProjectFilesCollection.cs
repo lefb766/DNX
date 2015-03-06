@@ -27,7 +27,7 @@ namespace Microsoft.Framework.Runtime
         private readonly string _projectDirectory;
         private readonly string _projectFilePath;
 
-        public ProjectFilesCollection(JObject rawProject, string projectDirectory, string projectFilePath, ICollection<string> warnings = null)
+        public ProjectFilesCollection(JObject rawProject, string projectDirectory, string projectFilePath, ICollection<FileFormatWarning> warnings = null)
         {
             _projectDirectory = projectDirectory;
             _projectFilePath = projectFilePath;

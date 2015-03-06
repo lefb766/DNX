@@ -93,7 +93,7 @@ namespace Microsoft.Framework.Runtime
             return File.Exists(projectPath);
         }
 
-        public static bool TryGetProject(string path, out Project project, ICollection<string> warnings = null)
+        public static bool TryGetProject(string path, out Project project, ICollection<FileFormatWarning> warnings = null)
         {
             project = null;
 
@@ -132,7 +132,7 @@ namespace Microsoft.Framework.Runtime
             return true;
         }
 
-        public static Project GetProject(string json, string projectName, string projectPath, ICollection<string> warnings = null)
+        public static Project GetProject(string json, string projectName, string projectPath, ICollection<FileFormatWarning> warnings = null)
         {
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
@@ -141,7 +141,7 @@ namespace Microsoft.Framework.Runtime
             return project;
         }
 
-        internal static Project GetProjectFromStream(Stream stream, string projectName, string projectPath, ICollection<string> warnings = null)
+        internal static Project GetProjectFromStream(Stream stream, string projectName, string projectPath, ICollection<FileFormatWarning> warnings = null)
         {
             var project = new Project();
 

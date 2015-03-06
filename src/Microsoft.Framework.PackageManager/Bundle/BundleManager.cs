@@ -41,7 +41,7 @@ namespace Microsoft.Framework.PackageManager.Bundle
 
         public bool Bundle()
         {
-            var warnings = new List<string>();
+            var warnings = new List<FileFormatWarning>();
             Runtime.Project project;
             if (!Runtime.Project.TryGetProject(_options.ProjectDir, out project, warnings))
             {
@@ -51,7 +51,7 @@ namespace Microsoft.Framework.PackageManager.Bundle
 
             foreach (var warning in warnings)
             {
-                _options.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
+                _options.Reports.Information.WriteLine(string.Format("Warning: At line {0} - {1}", warning.Line, warning.Message).Yellow());
             }
 
             // '--wwwroot' option can override 'webroot' property in project.json
