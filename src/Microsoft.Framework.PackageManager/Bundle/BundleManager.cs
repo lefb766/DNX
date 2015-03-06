@@ -41,11 +41,20 @@ namespace Microsoft.Framework.PackageManager.Bundle
 
         public bool Bundle()
         {
+            var warnings = new List<string>();
             Runtime.Project project;
-            if (!Runtime.Project.TryGetProject(_options.ProjectDir, out project))
+            if (!Runtime.Project.TryGetProject(_options.ProjectDir, out project, warnings))
             {
                 _options.Reports.Error.WriteLine("Unable to locate {0}.".Red(), Runtime.Project.ProjectFileName);
                 return false;
+            }
+
+            if (warnings.Any())
+            {
+                foreach (var warning in warnings)
+                {
+                    _options.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
+                }
             }
 
             // '--wwwroot' option can override 'webroot' property in project.json

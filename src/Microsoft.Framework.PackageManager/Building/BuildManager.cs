@@ -33,11 +33,20 @@ namespace Microsoft.Framework.PackageManager
 
         public bool Build()
         {
+            var warnings = new List<string>();
             Runtime.Project project;
-            if (!Runtime.Project.TryGetProject(_buildOptions.ProjectDir, out project))
+            if (!Runtime.Project.TryGetProject(_buildOptions.ProjectDir, out project, warnings))
             {
                 WriteError(string.Format("Unable to locate {0}.", Runtime.Project.ProjectFileName));
                 return false;
+            }
+
+            if (warnings.Any())
+            {
+                foreach (var warning in warnings)
+                {
+                    _buildOptions.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
+                }
             }
 
             var sw = Stopwatch.StartNew();

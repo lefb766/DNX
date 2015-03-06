@@ -41,7 +41,8 @@ namespace Microsoft.Framework.Runtime
                                          IEnumerable<string> fallbackIncluding = null,
                                          IEnumerable<string> additionalIncluding = null,
                                          IEnumerable<string> additionalExcluding = null,
-                                         bool includePatternsOnly = false)
+                                         bool includePatternsOnly = false,
+                                         ICollection<string> warnings = null)
         {
             var token = rawProject[name];
             if (legacyName != null)
@@ -50,6 +51,10 @@ namespace Microsoft.Framework.Runtime
                 if (legacyToken != null && token == null)
                 {
                     token = legacyToken;
+                    if (warnings != null)
+                    {
+                        warnings.Add(string.Format("Property {0} is deprecated. It is replaced by {1}", legacyName, name));
+                    }
                 }
             }
 
