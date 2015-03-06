@@ -433,7 +433,7 @@ namespace Microsoft.Framework.DesignTimeHost
                 {
                     projectCompilationChanged = UpdateProjectCompilation(project, out compilation);
 
-                    project.Diagnostics = new DiagnosticsMessage
+                    project.Diagnostics = new CompilationDiagnosticsMessage
                     {
                         Framework = project.Sources.Framework,
                         Diagnostics = compilation.Diagnostics
@@ -477,7 +477,7 @@ namespace Microsoft.Framework.DesignTimeHost
 
                     if (project.Diagnostics == null)
                     {
-                        project.Diagnostics = new DiagnosticsMessage
+                        project.Diagnostics = new CompilationDiagnosticsMessage
                         {
                             Framework = project.Sources.Framework,
                             Diagnostics = compilation.Diagnostics,
@@ -543,7 +543,7 @@ namespace Microsoft.Framework.DesignTimeHost
             }
 
             var unprocessedFrameworks = new HashSet<FrameworkName>(_remote.Projects.Keys);
-            var allDiagnostics = new List<DiagnosticsMessage>();
+            var allDiagnostics = new List<CompilationDiagnosticsMessage>();
 
             foreach (var pair in _local.Projects)
             {
@@ -631,7 +631,7 @@ namespace Microsoft.Framework.DesignTimeHost
             }
         }
 
-        private void SendDiagnostics(IList<DiagnosticsMessage> diagnostics)
+        private void SendDiagnostics(IList<CompilationDiagnosticsMessage> diagnostics)
         {
             if (diagnostics.Count == 0)
             {

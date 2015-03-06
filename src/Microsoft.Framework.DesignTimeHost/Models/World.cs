@@ -29,7 +29,7 @@ namespace Microsoft.Framework.DesignTimeHost.Models
         public SourcesMessage Sources { get; set; }
         public ReferencesMessage References { get; set; }
         public DependenciesMessage Dependencies { get; set; }
-        public DiagnosticsMessage Diagnostics { get; set; }
+        public CompilationDiagnosticsMessage Diagnostics { get; set; }
         public OutputsMessage Outputs { get; set; }
     }
 }
