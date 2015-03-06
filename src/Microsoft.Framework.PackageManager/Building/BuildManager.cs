@@ -41,12 +41,9 @@ namespace Microsoft.Framework.PackageManager
                 return false;
             }
 
-            if (warnings.Any())
+            foreach (var warning in warnings)
             {
-                foreach (var warning in warnings)
-                {
-                    _buildOptions.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
-                }
+                _buildOptions.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
             }
 
             var sw = Stopwatch.StartNew();

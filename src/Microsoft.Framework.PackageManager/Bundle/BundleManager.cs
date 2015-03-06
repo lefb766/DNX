@@ -49,12 +49,9 @@ namespace Microsoft.Framework.PackageManager.Bundle
                 return false;
             }
 
-            if (warnings.Any())
+            foreach (var warning in warnings)
             {
-                foreach (var warning in warnings)
-                {
-                    _options.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
-                }
+                _options.Reports.Information.WriteLine(string.Format("Warning: {0}".Yellow(), warning));
             }
 
             // '--wwwroot' option can override 'webroot' property in project.json
