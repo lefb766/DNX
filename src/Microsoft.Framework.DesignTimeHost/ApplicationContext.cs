@@ -372,7 +372,7 @@ namespace Microsoft.Framework.DesignTimeHost
 
                 ProjectSearchPaths = state.ProjectSearchPaths,
 
-                GlobalJsonPath = state.GlobalJsonPath,
+                GlobalJsonPath = state.GlobalJsonPath
             };
 
             _local.ProjectFormatWarnings = state.FileFormatWarnings;
