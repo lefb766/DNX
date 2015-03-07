@@ -11,6 +11,9 @@ namespace Microsoft.Framework.DesignTimeHost.Models
     public class World
     {
         public ProjectMessage ProjectInformation { get; set; }
+
+        public IList<FileFormatWarning> ProjectFormatWarnings { get; set; }
+
         public Dictionary<FrameworkName, ProjectWorld> Projects { get; set; }
 
         public World()
@@ -29,7 +32,7 @@ namespace Microsoft.Framework.DesignTimeHost.Models
         public SourcesMessage Sources { get; set; }
         public ReferencesMessage References { get; set; }
         public DependenciesMessage Dependencies { get; set; }
-        public CompilationDiagnosticsMessage Diagnostics { get; set; }
+        public DiagnosticsMessage Diagnostics { get; set; }
         public OutputsMessage Outputs { get; set; }
     }
 }

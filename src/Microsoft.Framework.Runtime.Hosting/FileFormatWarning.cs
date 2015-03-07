@@ -26,5 +26,21 @@ namespace Microsoft.Framework.Runtime
         public int Line { get; }
 
         public int Column { get; }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as FileFormatWarning;
+
+            return other != null &&
+                Message.Equals(other.Message, System.StringComparison.Ordinal) &&
+                Path.Equals(other.Path, System.StringComparison.OrdinalIgnoreCase) &&
+                Line == other.Line &&
+                Column == other.Line;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
