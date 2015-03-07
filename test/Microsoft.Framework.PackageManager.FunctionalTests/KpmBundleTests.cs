@@ -1050,6 +1050,12 @@ exec ""{2}{3}"" --appbase ""${0}"" Microsoft.Framework.ApplicationHost {4} ""$@"
                 var helloWorldAppPath = Path.Combine(tempDir, "HelloWorld");
                 TestUtils.CopyFolder(TestUtils.GetXreTestAppPath("HelloWorld"), helloWorldAppPath);
 
+                var lockFilePath = Path.Combine(helloWorldAppPath, "project.lock.json");
+                if (File.Exists(lockFilePath))
+                {
+                    File.Delete(lockFilePath);
+                }
+
                 var exitCode = KpmTestUtils.ExecKpm(
                     runtimeHomeDir,
                     subcommand: "bundle",
