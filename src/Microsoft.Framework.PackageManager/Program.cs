@@ -527,7 +527,7 @@ namespace Microsoft.Framework.PackageManager
 
                         var command = new WrapCommand();
                         command.Reports = reports;
-                        command.CsProjectPath = argPath.Value;
+                        command.InputFilePath = argPath.Value;
                         command.Configuration = optConfiguration.Value();
                         command.MsBuildPath = optMsBuildPath.Value();
                         command.InPlace = optInPlace.HasValue();

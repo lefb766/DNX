@@ -21,39 +21,50 @@ namespace Microsoft.Framework.PackageManager
         private static readonly string ReferenceResolverFileName = "ReferenceResolver.xml";
         private static readonly string WrapperProjectVersion = "1.0.0-*";
         private static readonly char PathSeparator = '/';
+        private static readonly string WrapRootName = "wrap";
 
-        public string CsProjectPath { get; set; }
+        public string InputFilePath { get; set; }
         public string Configuration { get; set; }
         public string MsBuildPath { get; set; }
         public bool InPlace { get; set; }
+        public string Framework { get; set; }
         public Reports Reports { get; set; }
 
         public bool ExecuteCommand()
         {
-            if (string.IsNullOrEmpty(CsProjectPath))
+            if (string.IsNullOrEmpty(InputFilePath))
             {
-                Reports.Error.WriteLine("Please specify the path to the csproj file to wrap");
+                Reports.Error.WriteLine("Please specify an input file to wrap");
                 return false;
             }
 
-            // If a folder is given, use a .csproj file in it
-            if (Directory.Exists(CsProjectPath))
+            if (!File.Exists(InputFilePath))
             {
-                CsProjectPath = Directory.EnumerateFiles(CsProjectPath, "*.csproj").FirstOrDefault();
-            }
-
-            if (!File.Exists(CsProjectPath))
-            {
-                Reports.Error.WriteLine("'{0}' doesn't exist".Red(), CsProjectPath);
+                Reports.Error.WriteLine("Input file {0} doesn't exist", InputFilePath.Red().Bold());
                 return false;
             }
 
+            var extension = Path.GetExtension(InputFilePath);
+            if (string.Equals(extension, ".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                return WrapCsProject();
+            }
+            else if (string.Equals(extension, ".dll", StringComparison.OrdinalIgnoreCase))
+            {
+                return WrapAssembly();
+            }
+
+            Reports.Error.WriteLine("Then extension of input file can only be .csproj or .dll".Red());
+            return false;
+        }
+
+        private bool WrapCsProject()
+        {
             if (string.IsNullOrEmpty(Configuration))
             {
                 Configuration = "debug";
             }
 
-            CsProjectPath = Path.GetFullPath(CsProjectPath);
             MsBuildPath = string.IsNullOrEmpty(MsBuildPath) ? GetDefaultMSBuildPath() : MsBuildPath;
 
             XDocument resolutionResults;
@@ -68,6 +79,29 @@ namespace Microsoft.Framework.PackageManager
             {
                 EmitProjectWrapper(projectElement);
             }
+
+            return true;
+        }
+
+        private bool WrapAssembly()
+        {
+            if (string.IsNullOrEmpty(Framework))
+            {
+                Reports.Error.WriteLine("Please specify framework when wrapping an assembly", Framework.Red().Bold());
+                return false;
+            }
+
+            var frameworkName = VersionUtility.ParseFrameworkName(Framework);
+            if (VersionUtility.UnsupportedFrameworkName.Equals(frameworkName))
+            {
+                Reports.Error.WriteLine("The framework '{0}' is not supported", Framework.Red().Bold());
+                return false;
+            }
+
+            var rootDir = ProjectResolver.ResolveRootDirectory(Directory.GetCurrentDirectory());
+            var wrapRoot = Path.Combine(rootDir, WrapRootName);
+            EmitAssemblyWrapper(wrapRoot, frameworkName, InputFilePath);
+            AddWrapFolderToGlobalJson(rootDir);
 
             return true;
         }
@@ -98,7 +132,7 @@ namespace Microsoft.Framework.PackageManager
                 }
 
                 resolutionResults.Add(new XElement("root"));
-                var projectFiles = new List<string> { CsProjectPath };
+                var projectFiles = new List<string> { Path.GetFullPath(InputFilePath) };
                 var intermediateResultFile = Path.Combine(tempDir, Path.GetRandomFileName());
 
                 for (var i = 0; i != projectFiles.Count; i++)
@@ -197,9 +231,9 @@ namespace Microsoft.Framework.PackageManager
             var rootObj = LoadOrCreateJson(globalJsonPath);
             var sourcesArray = GetOrCreateSourcesArray(rootObj);
 
-            if (!sourcesArray.Any(x => string.Equals(x.Value<string>(), "wrap", StringComparison.OrdinalIgnoreCase)))
+            if (!sourcesArray.Any(x => string.Equals(x.Value<string>(), WrapRootName, StringComparison.OrdinalIgnoreCase)))
             {
-                sourcesArray.Add("wrap");
+                sourcesArray.Add(WrapRootName);
                 File.WriteAllText(globalJsonPath, rootObj.ToString());
             }
         }
@@ -215,7 +249,7 @@ namespace Microsoft.Framework.PackageManager
 
             var projectDir = Path.GetDirectoryName(projectFile);
             var rootDir = ProjectResolver.ResolveRootDirectory(projectDir);
-            var wrapRoot = Path.Combine(rootDir, "wrap");
+            var wrapRoot = Path.Combine(rootDir, WrapRootName);
 
             string targetProjectJson;
             if (InPlace)
@@ -288,7 +322,7 @@ namespace Microsoft.Framework.PackageManager
                 var assemblyPath = itemElement.Attribute("evaluated").Value;
                 var assemblyProjectName = Path.GetFileNameWithoutExtension(assemblyPath);
 
-                EmitAssemblyWrapper(wrapRoot, targetFramework, assemblyPath);
+                EmitAssemblyWrapper(wrapRoot, targetFramework, assemblyPath, isSubProcedure: true);
 
                 Reports.Information.WriteLine("  Adding project dependency '{0}.{1}'",
                     assemblyProjectName, WrapperProjectVersion);
@@ -416,14 +450,22 @@ namespace Microsoft.Framework.PackageManager
             return false;
         }
 
-        private void EmitAssemblyWrapper(string wrapRoot, FrameworkName targetFramework, string assemblyPath)
+        private void EmitAssemblyWrapper(string wrapRoot, FrameworkName targetFramework, string assemblyPath,
+            bool isSubProcedure = false)
         {
             var projectName = Path.GetFileNameWithoutExtension(assemblyPath);
             var targetProjectJson = Path.Combine(wrapRoot, projectName, Runtime.Project.ProjectFileName);
 
-            Reports.Information.WriteLine("  Wrapping project '{0}' for '{1}'", projectName, targetFramework);
-            Reports.Information.WriteLine("    Source {0}", assemblyPath.Bold());
-            Reports.Information.WriteLine("    Target {0}", targetProjectJson.Bold());
+            var outputIndentation = string.Empty;
+            if (isSubProcedure)
+            {
+                outputIndentation = "  ";
+            }
+
+            Reports.Information.WriteLine("{0}Wrapping project '{1}' for '{2}'",
+                outputIndentation, projectName, targetFramework);
+            Reports.Information.WriteLine("{0}  Source {1}", outputIndentation, assemblyPath.Bold());
+            Reports.Information.WriteLine("{0}  Target {1}", outputIndentation, targetProjectJson.Bold());
 
             var projectJson = LoadOrCreateProjectJson(targetProjectJson);
 
