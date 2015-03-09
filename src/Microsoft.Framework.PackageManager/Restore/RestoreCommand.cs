@@ -17,6 +17,8 @@ using Microsoft.Framework.Runtime;
 using NuGet;
 using Microsoft.Framework.Runtime.DependencyManagement;
 using TempRepack.Engine.Model;
+using System.Runtime.Versioning;
+using Microsoft.Framework.PackageManager.Utils;
 
 namespace Microsoft.Framework.PackageManager
 {
@@ -422,7 +424,7 @@ namespace Microsoft.Framework.PackageManager
                 }
             }
             var graphs = await Task.WhenAll(tasks);
-            foreach(var graph in graphs)
+            foreach (var graph in graphs)
             {
                 Reduce(graph);
             }
@@ -803,20 +805,9 @@ namespace Microsoft.Framework.PackageManager
                     }
 
                     var package = packageInfo.Package;
+                    var lockFileLib = LockFileUtils.CreateLockFileLibraryForProject(project, package, sha512);
 
-                    using (var nupkgStream = package.GetStream())
-                    {
-                        var lockFileLib = new LockFileLibrary();
-                        lockFileLib.Name = package.Id;
-                        lockFileLib.Version = package.Version;
-                        lockFileLib.Sha = Convert.ToBase64String(sha512.ComputeHash(nupkgStream));
-                        lockFileLib.DependencySets = package.DependencySets.ToList();
-                        lockFileLib.FrameworkAssemblies = package.FrameworkAssemblies.ToList();
-                        lockFileLib.PackageAssemblyReferences = package.PackageAssemblyReferences.ToList();
-                        lockFileLib.Files = package.GetFiles().ToList();
-
-                        lockFile.Libraries.Add(lockFileLib);
-                    }
+                    lockFile.Libraries.Add(lockFileLib);
                 }
             }
 
@@ -824,6 +815,7 @@ namespace Microsoft.Framework.PackageManager
             lockFile.ProjectFileDependencyGroups.Add(new ProjectFileDependencyGroup(
                 string.Empty,
                 project.Dependencies.Select(x => x.LibraryRange.ToString())));
+
             foreach (var frameworkInfo in project.GetTargetFrameworks())
             {
                 lockFile.ProjectFileDependencyGroups.Add(new ProjectFileDependencyGroup(
