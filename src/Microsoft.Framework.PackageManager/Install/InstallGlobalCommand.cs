@@ -41,8 +41,6 @@ namespace Microsoft.Framework.PackageManager
 
         public async Task<bool> Execute(string packageId, string packageVersion)
         {
-            System.Diagnostics.Debugger.Launch();
-
             // 0. Resolve the actual package id and version
             var packageIdAndVersion = await ResolvePackageIdAndVersion(packageId, packageVersion);
 
